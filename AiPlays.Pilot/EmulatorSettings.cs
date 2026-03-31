@@ -4,5 +4,6 @@
     {
         public string MgbaPath { get; init; }
         public string RomPath { get; init; }
+        public string ScreenshotPath { get; set; }
     }
 }

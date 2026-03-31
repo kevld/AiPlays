@@ -10,6 +10,8 @@ var builder = Host.CreateDefaultBuilder()
 
         services.AddSingleton<CommandQueueService>();
         services.AddHostedService(sp => sp.GetRequiredService<CommandQueueService>());
+        services.AddSingleton<ScreenshotService>();
+        services.AddHostedService(sp => sp.GetRequiredService<ScreenshotService>());
 
         services.AddSingleton<Emulator>();
     });

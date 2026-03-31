@@ -15,6 +15,7 @@ namespace AiPlays.Pilot
         private readonly string _mgbaPath;
         private readonly string _romPath;
         private readonly CommandQueueService _commandQueue;
+        private readonly ScreenshotService _screenshotService;
 
         private Process? _process;
 
@@ -32,9 +33,10 @@ namespace AiPlays.Pilot
 
         #endregion
 
-        public Emulator(CommandQueueService commandQueue, IOptions<EmulatorSettings> options)
+        public Emulator(CommandQueueService commandQueue, ScreenshotService screenshotService, IOptions<EmulatorSettings> options)
         {
             _commandQueue = commandQueue;
+            _screenshotService = screenshotService;
             _mgbaPath = options.Value.MgbaPath;
             _romPath = options.Value.RomPath;
 
@@ -70,6 +72,9 @@ namespace AiPlays.Pilot
 
                 _windowHandle = _process.MainWindowHandle;
                 Console.WriteLine($"Handled on : {_windowHandle}");
+
+                _screenshotService.SetEmulatorProcess(_process);
+                
             }
 
         }
