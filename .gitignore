@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 **/**.gba
 **/**mgba.exe
+/AiPlays.Pilot/mgba/pkm.sav
