@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="AiPlays.Perception/AiPlays.Perception.csproj" Id="60683b38-eed3-4748-8420-3eac7c42a053" />
   <Project Path="AiPlays.Pilot/AiPlays.Pilot.csproj" />
 </Solution>
