@@ -100,54 +100,54 @@ namespace AiPlays.Pilot
             });
         }
 
-        public void AddCommand(GbaKey key)
-        {
-            VirtualKeyCode? command = null;
+        //public void AddCommand(GbaKey key)
+        //{
+        //    VirtualKeyCode? command = null;
 
-            #region enum
+        //    #region enum
 
-            switch (key)
-            {
-                // Check mGBA keymap
-                case GbaKey.A:
-                    command = VirtualKeyCode.VK_X;
-                    break;
-                case GbaKey.B:
-                    command = VirtualKeyCode.VK_Z;
-                    break;
-                case GbaKey.L:
-                    command = VirtualKeyCode.VK_A;
-                    break;
-                case GbaKey.R:
-                    command = VirtualKeyCode.VK_S;
-                    break;
-                case GbaKey.Start:
-                    command = VirtualKeyCode.RETURN;
-                    break;
-                case GbaKey.Select:
-                    command = VirtualKeyCode.BACK;
-                    break;
-                case GbaKey.ArrowUp:
-                    command = VirtualKeyCode.UP;
-                    break;
-                case GbaKey.ArrowRight:
-                    command = VirtualKeyCode.RIGHT;
-                    break;
-                case GbaKey.ArrowDown:
-                    command = VirtualKeyCode.DOWN;
-                    break;
-                case GbaKey.ArrowLeft:
-                    command = VirtualKeyCode.LEFT;
-                    break;
-                default:
-                    break;
-            }
+        //    switch (key)
+        //    {
+        //        // Check mGBA keymap
+        //        case GbaKey.A:
+        //            command = VirtualKeyCode.VK_X;
+        //            break;
+        //        case GbaKey.B:
+        //            command = VirtualKeyCode.VK_Z;
+        //            break;
+        //        case GbaKey.L:
+        //            command = VirtualKeyCode.VK_A;
+        //            break;
+        //        case GbaKey.R:
+        //            command = VirtualKeyCode.VK_S;
+        //            break;
+        //        case GbaKey.Start:
+        //            command = VirtualKeyCode.RETURN;
+        //            break;
+        //        case GbaKey.Select:
+        //            command = VirtualKeyCode.BACK;
+        //            break;
+        //        case GbaKey.ArrowUp:
+        //            command = VirtualKeyCode.UP;
+        //            break;
+        //        case GbaKey.ArrowRight:
+        //            command = VirtualKeyCode.RIGHT;
+        //            break;
+        //        case GbaKey.ArrowDown:
+        //            command = VirtualKeyCode.DOWN;
+        //            break;
+        //        case GbaKey.ArrowLeft:
+        //            command = VirtualKeyCode.LEFT;
+        //            break;
+        //        default:
+        //            break;
+        //    }
 
-            #endregion
+        //    #endregion
 
-            if (command.HasValue)
-                _commandQueue.AddCommandToQueue(command.Value);
-        }
+        //    if (command.HasValue)
+        //        _commandQueue.AddCommandToQueue(command.Value);
+        //}
 
         public void HandleManualInput(string input)
         {
@@ -195,7 +195,7 @@ namespace AiPlays.Pilot
             #endregion
 
             if (key.HasValue)
-                AddCommand(key.Value);
+               _commandQueue.AddCommand(key.Value);
         }
     }
 }
