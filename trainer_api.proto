@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "AiPlays.Grpc";
+
+service TrainerApi {
+
+	// Get current state game
+	rpc Step (ActionRequest) returns (Observation);
+}
+
+message ActionRequest {
+	int32 gba_key = 1;
+}
+
+message Observation {
+	bytes image_data = 1;
+	bool is_exploring = 2;
+}
