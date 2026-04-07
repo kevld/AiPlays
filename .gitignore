@@ -365,3 +365,4 @@ FodyWeavers.xsd
 **/**.gba
 **/**mgba.exe
 /AiPlays.Pilot/mgba/pkm.sav
+/AiPlays.Pilot/mgba/pkm.ss1
