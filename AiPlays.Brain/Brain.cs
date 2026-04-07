@@ -1,12 +1,8 @@
-﻿using AiPlays.Brain.Enums;
-using AiPlays.Brain.Extensions;
+﻿using AiPlays.Core.Extensions;
+using AiPlays.Core.Grpc;
 using AiPlays.Pilot.Services;
 using AiPlays_Perception;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 
 namespace AiPlays.Brain
 {
@@ -37,7 +33,8 @@ namespace AiPlays.Brain
                 {
                     case GameState.Cutscene:
                     case GameState.Dialogue:
-                        _commandQueueService.AddCommand(Pilot.Enums.GbaKey.A);
+                        GbaKey gbaKey = GbaKey.A;
+                        _commandQueueService.AddCommand(gbaKey);
                         Console.WriteLine("Cutscene/Dialogue : A");
                         // Press a
                         break;

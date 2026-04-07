@@ -10,7 +10,7 @@ using System.Text;
 
 namespace AiPlays.Pilot.Services
 {
-    public class ScreenshotService : BackgroundService
+    public class ScreenshotService
     {
         #region dll windows
 
@@ -34,33 +34,28 @@ namespace AiPlays.Pilot.Services
             _screenshotPath = options.Value.ScreenshotPath;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            await TakeScreenshot(stoppingToken);
-        }
+
 
         public void SetEmulatorProcess(Process process)
         {
             _emulatorProcess = process;
         }
 
-        private async Task TakeScreenshot(CancellationToken stoppingToken)
+        public async Task<byte[]> TakeScreenshot()
         {
             Directory.CreateDirectory("Screenshots");
 
-            while (!stoppingToken.IsCancellationRequested)
+            if (_emulatorProcess != null)
             {
-                if(_emulatorProcess != null)
+                var handle = _emulatorProcess.MainWindowHandle;
+
+                if (GetWindowRect(handle, out RECT rect))
                 {
-                    var handle = _emulatorProcess.MainWindowHandle;
-                   
-                    if(GetWindowRect(handle, out RECT rect))
+                    int width = rect.Right - rect.Left;
+                    int height = rect.Bottom - rect.Top;
+
+                    if (width > 0 && height > 0)
                     {
-                        int width = rect.Right - rect.Left;
-                        int height = rect.Bottom - rect.Top;
-
-                        if (width <= 0 || height <= 0) return;
-
                         using (Bitmap bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb))
                         {
                             using (Graphics g = Graphics.FromImage(bmp))
@@ -70,16 +65,21 @@ namespace AiPlays.Pilot.Services
                                 g.ReleaseHdc(hdc);
                             }
 
-                            string fileName = $"snap_{DateTime.Now:yyyyMMdd_HHmmss}.png";
-                            bmp.Save(Path.Combine(_screenshotPath, fileName), ImageFormat.Png);
-                        }
+                            //string fileName = $"snap_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+                            //bmp.Save(Path.Combine(_screenshotPath, fileName), ImageFormat.Png);
 
+                            using (var ms = new MemoryStream())
+                            {
+                                bmp.Save(ms, ImageFormat.Png);
+                                return ms.ToArray();
+                            }
+                        }
                     }
 
                 }
-
-                await Task.Delay(1000, stoppingToken);
             }
+
+            return Array.Empty<byte>();
         }
     }
 }

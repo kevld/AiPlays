@@ -1,45 +1,31 @@
 ﻿using AiPlays.Brain;
+using AiPlays.Brain.Services;
+using AiPlays.Core.Interfaces;
+using AiPlays.Perception.Services;
 using AiPlays.Pilot;
 using AiPlays.Pilot.Services;
-using AiPlays_Perception;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Tensorflow.Contexts;
 
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddGrpc();
 
-var builder = Host.CreateDefaultBuilder()
-    .ConfigureServices((context, services) =>
-    {
-        services.Configure<BrainSettings>(context.Configuration.GetSection("Settings"));
-        services.Configure<EmulatorSettings>(context.Configuration.GetSection("EmulatorSettings"));
+builder.Services.Configure<BrainSettings>(builder.Configuration.GetSection("Settings"));
+builder.Services.Configure<EmulatorSettings>(builder.Configuration.GetSection("EmulatorSettings"));
 
-        services.AddSingleton<CommandQueueService>();
-        services.AddHostedService(sp => sp.GetRequiredService<CommandQueueService>());
+builder.Services.AddSingleton<CommandQueueService>();
+builder.Services.AddSingleton<ScreenshotService>();
+builder.Services.AddSingleton<Emulator>();
 
-        services.AddSingleton<ScreenshotService>();
-        services.AddHostedService(sp => sp.GetRequiredService<ScreenshotService>());
-
-        services.AddSingleton<Emulator>();
-        services.AddSingleton<Brain>();
-    });
+builder.Services.AddSingleton<IPilot, PilotService>();
+builder.Services.AddSingleton<IPerception, PerceptionService>();
 
 var app = builder.Build();
-await app.StartAsync();
 
 Emulator mgba = app.Services.GetRequiredService<Emulator>();
 mgba.Start();
 
-Brain brain = app.Services.GetRequiredService<Brain>();
-brain.Start();
-
-
-// Action
-
-Console.WriteLine("Brain started. Type 'exit' to exit.");
-string input = "";
-do
-{
-    input = Console.ReadLine();
-} while (input.ToLower() != "exit");
-
-await app.StopAsync();
+app.MapGrpcService<TrainerApiService>();
+app.MapGet("/", () => "gRPC running...");
+// builder.Configuration["gRPC"]
+await app.RunAsync();

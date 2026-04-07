@@ -25,15 +25,18 @@ class ExplorationEnv(gym.Env):
         self.observation_space = spaces.Box(low=0, high=255, shape=(84,84,1), dtype=np.uint8)
 
         # gRPC connect 
-        self.channel = grpc.insecure_channel('localhost:50051')
+        self.channel = grpc.insecure_channel('localhost:5000')
         self.endpoint = trainer_api_pb2_grpc.TrainerApiStub(self.channel)
 
     def step(self, action):
-        response = self.send_action_and_get_response(action)
+        response = self.send_action_and_get_response(action+1)
 
         img = self.process_image(response.image_data)      
 
         reward = 0
+
+        if response.game_state != 3:
+            reward -= .1
 
         if self.last_frame is not None:
             # Calculate the difference between the current frame and the last frame
@@ -48,7 +51,7 @@ class ExplorationEnv(gym.Env):
         
         self.last_frame = img
 
-        return img, reward, not response.is_exploring, False, {}    
+        return img, reward, response.game_state != 3, False, {}    
 
     def process_image(self, image_data):
          # Gray scale image
@@ -62,18 +65,17 @@ class ExplorationEnv(gym.Env):
 
     def send_action_and_get_response(self, action):
         # Request
-        request = trainer_api_pb2.ActionRequest(action=action)
+        request = trainer_api_pb2.ActionRequest(gba_key=action)
         response = self.endpoint.Step(request)
 
         return response
 
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
             super().reset(seed=seed)
-
             # Set initial state
-            first_frame = self.send_action_and_get_response(0) 
-            self.last_frame = self.process_image(first_frame)
-
+            response = self.send_action_and_get_response(0) 
+            self.last_frame = self.process_image(response.image_data)
+            return self.last_frame, {}
 
     def close(self):
         if self.channel:

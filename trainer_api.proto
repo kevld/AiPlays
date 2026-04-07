@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "AiPlays.Grpc";
+option csharp_namespace = "AiPlays.Core.Grpc";
 
 service TrainerApi {
 
@@ -9,10 +9,34 @@ service TrainerApi {
 }
 
 message ActionRequest {
-	int32 gba_key = 1;
+	GbaKey gba_key = 1;
 }
 
 message Observation {
 	bytes image_data = 1;
-	bool is_exploring = 2;
+	GameState game_state = 2;
+}
+
+enum GbaKey {
+	None = 0;
+	A = 1;
+    B = 2;
+    L = 3;
+    R = 4;
+    Start = 5;
+    Select = 6;
+    ArrowUp = 7;
+    ArrowRight = 8;
+    ArrowDown = 9;
+    ArrowLeft = 10;
+}
+
+enum GameState {
+    Unknown = 0;
+    Cutscene = 1;
+    Dialogue = 2;
+    Exploration = 3;
+    Fight = 4;
+    Interaction = 5;
+    Menu = 6;
 }

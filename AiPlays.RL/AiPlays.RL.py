@@ -1,9 +1,10 @@
 import ExplorationEnv
 import torch
 from datetime import datetime
+from stable_baselines3 import PPO
 
 def main():
-    env = ExplorationEnv()
+    env = ExplorationEnv.ExplorationEnv()
 
     device = "cpu"
 

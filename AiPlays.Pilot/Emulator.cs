@@ -1,10 +1,9 @@
-﻿using AiPlays.Pilot.Enums;
+﻿using AiPlays.Core.Grpc;
 using AiPlays.Pilot.Services;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Options;
-using System.Collections;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using WindowsInput;
 using WindowsInput.Native;
 
 namespace AiPlays.Pilot
@@ -30,6 +29,8 @@ namespace AiPlays.Pilot
         private const uint WM_KEYDOWN = 0x0100;
         private const uint WM_KEYUP = 0x0101;
         private IntPtr _windowHandle;
+
+        public IntPtr WindowHandle => _windowHandle;
 
         #endregion
 
@@ -74,12 +75,17 @@ namespace AiPlays.Pilot
                 Console.WriteLine($"Handled on : {_windowHandle}");
 
                 _screenshotService.SetEmulatorProcess(_process);
-                
+
+                // Load State
+                Console.WriteLine("Emulator started. Waiting 5s...");
+                Thread.Sleep(5000);
+                Console.WriteLine("Load state 1");
+                SendCommand(VirtualKeyCode.F1);
             }
 
         }
 
-        private void SendCommand(VirtualKeyCode command)
+        public void SendCommand(VirtualKeyCode command)
         {
             if (_windowHandle == IntPtr.Zero) return;
 
@@ -99,55 +105,6 @@ namespace AiPlays.Pilot
                 PostMessage(_windowHandle, WM_KEYUP, (IntPtr)vk, lParamUp);
             });
         }
-
-        //public void AddCommand(GbaKey key)
-        //{
-        //    VirtualKeyCode? command = null;
-
-        //    #region enum
-
-        //    switch (key)
-        //    {
-        //        // Check mGBA keymap
-        //        case GbaKey.A:
-        //            command = VirtualKeyCode.VK_X;
-        //            break;
-        //        case GbaKey.B:
-        //            command = VirtualKeyCode.VK_Z;
-        //            break;
-        //        case GbaKey.L:
-        //            command = VirtualKeyCode.VK_A;
-        //            break;
-        //        case GbaKey.R:
-        //            command = VirtualKeyCode.VK_S;
-        //            break;
-        //        case GbaKey.Start:
-        //            command = VirtualKeyCode.RETURN;
-        //            break;
-        //        case GbaKey.Select:
-        //            command = VirtualKeyCode.BACK;
-        //            break;
-        //        case GbaKey.ArrowUp:
-        //            command = VirtualKeyCode.UP;
-        //            break;
-        //        case GbaKey.ArrowRight:
-        //            command = VirtualKeyCode.RIGHT;
-        //            break;
-        //        case GbaKey.ArrowDown:
-        //            command = VirtualKeyCode.DOWN;
-        //            break;
-        //        case GbaKey.ArrowLeft:
-        //            command = VirtualKeyCode.LEFT;
-        //            break;
-        //        default:
-        //            break;
-        //    }
-
-        //    #endregion
-
-        //    if (command.HasValue)
-        //        _commandQueue.AddCommandToQueue(command.Value);
-        //}
 
         public void HandleManualInput(string input)
         {
@@ -196,6 +153,68 @@ namespace AiPlays.Pilot
 
             if (key.HasValue)
                _commandQueue.AddCommand(key.Value);
+        }
+
+        public void AddCommandToQueue(GbaKey action)
+        {
+            if (action != GbaKey.None)
+            {
+                _commandQueue.AddCommand(action);
+            }
+        }
+
+        public async Task<byte[]> TakeScreenshot()
+        {
+            var result = await _screenshotService.TakeScreenshot();
+            return result;
+        }
+
+        internal void SendGbaCommand(GbaKey action)
+        {
+            VirtualKeyCode? command = null;
+
+            #region enum
+
+            switch (action)
+            {
+                // Check mGBA keymap
+                case GbaKey.A:
+                    command = VirtualKeyCode.VK_X;
+                    break;
+                case GbaKey.B:
+                    command = VirtualKeyCode.VK_Z;
+                    break;
+                case GbaKey.L:
+                    command = VirtualKeyCode.VK_A;
+                    break;
+                case GbaKey.R:
+                    command = VirtualKeyCode.VK_S;
+                    break;
+                case GbaKey.Start:
+                    command = VirtualKeyCode.RETURN;
+                    break;
+                case GbaKey.Select:
+                    command = VirtualKeyCode.BACK;
+                    break;
+                case GbaKey.ArrowUp:
+                    command = VirtualKeyCode.UP;
+                    break;
+                case GbaKey.ArrowRight:
+                    command = VirtualKeyCode.RIGHT;
+                    break;
+                case GbaKey.ArrowDown:
+                    command = VirtualKeyCode.DOWN;
+                    break;
+                case GbaKey.ArrowLeft:
+                    command = VirtualKeyCode.LEFT;
+                    break;
+                default:
+                    break;
+            }
+
+            #endregion
+            if(command.HasValue)
+                SendCommand(command.Value);
         }
     }
 }

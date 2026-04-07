@@ -1,9 +1,6 @@
-﻿using AiPlays.Pilot.Enums;
+﻿using AiPlays.Core.Grpc;
 using Microsoft.Extensions.Hosting;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
 using WindowsInput.Native;
 
 namespace AiPlays.Pilot.Services

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AiPlays.Brain.Extensions
+﻿namespace AiPlays.Core.Extensions
 {
     public static class EnumExtension
     {

@@ -24,18 +24,22 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11trainer_api.proto\" \n\rActionRequest\x12\x0f\n\x07gba_key\x18\x01 \x01(\x05\"7\n\x0bObservation\x12\x12\n\nimage_data\x18\x01 \x01(\x0c\x12\x14\n\x0cis_exploring\x18\x02 \x01(\x08\x32\x32\n\nTrainerApi\x12$\n\x04Step\x12\x0e.ActionRequest\x1a\x0c.ObservationB\x0f\xaa\x02\x0c\x41iPlays.Grpcb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11trainer_api.proto\")\n\rActionRequest\x12\x18\n\x07gba_key\x18\x01 \x01(\x0e\x32\x07.GbaKey\"A\n\x0bObservation\x12\x12\n\nimage_data\x18\x01 \x01(\x0c\x12\x1e\n\ngame_state\x18\x02 \x01(\x0e\x32\n.GameState*\x80\x01\n\x06GbaKey\x12\x08\n\x04None\x10\x00\x12\x05\n\x01\x41\x10\x01\x12\x05\n\x01\x42\x10\x02\x12\x05\n\x01L\x10\x03\x12\x05\n\x01R\x10\x04\x12\t\n\x05Start\x10\x05\x12\n\n\x06Select\x10\x06\x12\x0b\n\x07\x41rrowUp\x10\x07\x12\x0e\n\nArrowRight\x10\x08\x12\r\n\tArrowDown\x10\t\x12\r\n\tArrowLeft\x10\n*k\n\tGameState\x12\x0b\n\x07Unknown\x10\x00\x12\x0c\n\x08\x43utscene\x10\x01\x12\x0c\n\x08\x44ialogue\x10\x02\x12\x0f\n\x0b\x45xploration\x10\x03\x12\t\n\x05\x46ight\x10\x04\x12\x0f\n\x0bInteraction\x10\x05\x12\x08\n\x04Menu\x10\x06\x32\x32\n\nTrainerApi\x12$\n\x04Step\x12\x0e.ActionRequest\x1a\x0c.ObservationB\x14\xaa\x02\x11\x41iPlays.Core.Grpcb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'trainer_api_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'\252\002\014AiPlays.Grpc'
+  _globals['DESCRIPTOR']._serialized_options = b'\252\002\021AiPlays.Core.Grpc'
+  _globals['_GBAKEY']._serialized_start=132
+  _globals['_GBAKEY']._serialized_end=260
+  _globals['_GAMESTATE']._serialized_start=262
+  _globals['_GAMESTATE']._serialized_end=369
   _globals['_ACTIONREQUEST']._serialized_start=21
-  _globals['_ACTIONREQUEST']._serialized_end=53
-  _globals['_OBSERVATION']._serialized_start=55
-  _globals['_OBSERVATION']._serialized_end=110
-  _globals['_TRAINERAPI']._serialized_start=112
-  _globals['_TRAINERAPI']._serialized_end=162
+  _globals['_ACTIONREQUEST']._serialized_end=62
+  _globals['_OBSERVATION']._serialized_start=64
+  _globals['_OBSERVATION']._serialized_end=129
+  _globals['_TRAINERAPI']._serialized_start=371
+  _globals['_TRAINERAPI']._serialized_end=421
 # @@protoc_insertion_point(module_scope)
