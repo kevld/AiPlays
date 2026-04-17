@@ -16,9 +16,7 @@
 		</PackageReference>
 	</ItemGroup>
 
-	<ItemGroup>
-		<Protobuf Include="..\trainer_api.proto"
-				  GrpcServices="Both"
-				  Access="Public"/>
-	</ItemGroup>
+	<!--<ItemGroup>
+		<Protobuf Include="..\trainer_api.proto" GrpcServices="Both" Access="Public" />
+	</ItemGroup>-->
 </Project>

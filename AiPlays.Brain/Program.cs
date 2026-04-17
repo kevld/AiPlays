@@ -25,7 +25,7 @@ var app = builder.Build();
 Emulator mgba = app.Services.GetRequiredService<Emulator>();
 mgba.Start();
 
-app.MapGrpcService<TrainerApiService>();
+app.MapGrpcService<TrainerService>();
 app.MapGet("/", () => "gRPC running...");
 // builder.Configuration["gRPC"]
 await app.RunAsync();

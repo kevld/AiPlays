@@ -1,6 +1,5 @@
-﻿using AiPlays.Core.Grpc;
+﻿using AiPlays.Core.Enums;
 using AiPlays.Pilot.Services;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -22,10 +21,10 @@ namespace AiPlays.Pilot
 
         [DllImport("user32.dll")]
         private static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-        
+
         [DllImport("user32.dll")]
         private static extern uint MapVirtualKey(uint uCode, uint uMapType);
-        
+
         private const uint WM_KEYDOWN = 0x0100;
         private const uint WM_KEYUP = 0x0101;
         private IntPtr _windowHandle;
@@ -100,7 +99,7 @@ namespace AiPlays.Pilot
 
             PostMessage(_windowHandle, WM_KEYDOWN, (IntPtr)vk, lParamDown);
 
-            Task.Delay(100).ContinueWith(_ =>
+            Task.Delay(25).ContinueWith(_ =>
             {
                 PostMessage(_windowHandle, WM_KEYUP, (IntPtr)vk, lParamUp);
             });
@@ -152,7 +151,7 @@ namespace AiPlays.Pilot
             #endregion
 
             if (key.HasValue)
-               _commandQueue.AddCommand(key.Value);
+                _commandQueue.AddCommand(key.Value);
         }
 
         public void AddCommandToQueue(GbaKey action)
@@ -208,12 +207,15 @@ namespace AiPlays.Pilot
                 case GbaKey.ArrowLeft:
                     command = VirtualKeyCode.LEFT;
                     break;
+                case GbaKey.None:
+                    command = VirtualKeyCode.F1;
+                    break;
                 default:
                     break;
             }
 
             #endregion
-            if(command.HasValue)
+            if (command.HasValue)
                 SendCommand(command.Value);
         }
     }

@@ -1,4 +1,4 @@
-﻿using AiPlays.Core.Grpc;
+﻿using AiPlays.Core.Enums;
 
 namespace AiPlays.Core.Interfaces
 {

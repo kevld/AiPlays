@@ -1,4 +1,4 @@
-syntax = "proto3";
+/*syntax = "proto3";
 
 option csharp_namespace = "AiPlays.Core.Grpc";
 
@@ -39,4 +39,4 @@ enum GameState {
     Fight = 4;
     Interaction = 5;
     Menu = 6;
-}
+*/

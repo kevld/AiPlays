@@ -1,4 +1,6 @@
-﻿using AiPlays.Core.Grpc;
+﻿using System;
+using System.Threading.Tasks;
+using AiPlays.Core.Enums;
 using AiPlays.Core.Interfaces;
 
 namespace AiPlays.Pilot.Services
@@ -21,7 +23,7 @@ namespace AiPlays.Pilot.Services
         {
             _emulator.SendGbaCommand(action);
 
-            await Task.Delay(250);
+            await Task.Delay(50);
         }
 
         public byte[] TakeScreenshot()
