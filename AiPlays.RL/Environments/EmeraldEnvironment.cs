@@ -7,6 +7,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using TorchSharp;
+using System.IO;
 
 namespace AiPlays.RL.Environments
 {
@@ -67,7 +68,7 @@ namespace AiPlays.RL.Environments
             //_newObservation = await _trainerService.Step(_keyPressed);
             _previousState = _newState;
             _newFrame = ProcessImage(_newObservation.ImageData);
-
+            //SaveFrameAsPng(_newFrame, $"transformed/frame_{DateTime.Now:yyyyMMdd_HHmmssfff}.png");
             _newState = new ObservableState()
             {
                 GameState = (int)_newObservation.GameState,
@@ -79,29 +80,48 @@ namespace AiPlays.RL.Environments
 
         }
 
-        private bool HasMoved()
+        private static void SaveFrameAsPng(byte[,] frame, string path)
         {
-            if (_previousFrame == null || _newFrame == null)
-                return false;
+            int height = frame.GetLength(0);
+            int width = frame.GetLength(1);
 
-            int height = _newFrame.GetLength(0);
-            int width = _newFrame.GetLength(1);
-
-            if (height != _previousFrame.GetLength(0) || width != _previousFrame.GetLength(1))
-                return false;
-
-            long sum = 0;
+            using var image = new Image<L8>(width, height);
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
-                    sum += Math.Abs((int)_newFrame[y, x] - (int)_previousFrame[y, x]);
+                    image[x, y] = new L8(frame[y, x]);
                 }
             }
 
-            float avgChange = sum / (float)(width * height);
+            Directory.CreateDirectory(Path.GetDirectoryName(path) ?? ".");
+            image.Save(path); // format inferred from extension
+        }
+
+        private bool HasMoved()
+        {
+            if (_previousFrame == null || _newFrame == null) return false;
+
+            int height = _newFrame.GetLength(0);
+            int width = _newFrame.GetLength(1);
+
+            int significantChanges = 0;
+            int threshold = 25;
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (Math.Abs((int)_newFrame[y, x] - (int)_previousFrame[y, x]) > threshold)
+                    {
+                        significantChanges++;
+                    }
+                }
+            }
+
             // return true if average per-pixel change indicates movement
-            return avgChange > 1.5f;
+            float percentChanged = (significantChanges / (float)(width * height)) * 100;
+            return percentChanged > 15.0f;
         }
 
         private static byte[,] ProcessImage(byte[] imageData)

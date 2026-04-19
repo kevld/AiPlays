@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace AiPlays.Pilot.Services
 {
@@ -18,6 +17,9 @@ namespace AiPlays.Pilot.Services
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
         [DllImport("user32.dll")]
+        private static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+        [DllImport("user32.dll")]
         private static extern bool PrintWindow(IntPtr hWnd, IntPtr hdcBlt, int nFlags);
 
         [StructLayout(LayoutKind.Sequential)]
@@ -26,15 +28,12 @@ namespace AiPlays.Pilot.Services
         #endregion
 
         private readonly string _screenshotPath;
-
         private Process? _emulatorProcess;
 
         public ScreenshotService(IOptions<EmulatorSettings> options)
         {
             _screenshotPath = options.Value.ScreenshotPath;
         }
-
-
 
         public void SetEmulatorProcess(Process process)
         {
@@ -43,39 +42,54 @@ namespace AiPlays.Pilot.Services
 
         public async Task<byte[]> TakeScreenshot()
         {
-            Directory.CreateDirectory("Screenshots");
+            Directory.CreateDirectory(_screenshotPath);
 
-            if (_emulatorProcess != null)
+            if (_emulatorProcess != null && !_emulatorProcess.HasExited)
             {
                 var handle = _emulatorProcess.MainWindowHandle;
 
-                if (GetWindowRect(handle, out RECT rect))
+                if (GetWindowRect(handle, out RECT windowRect) && GetClientRect(handle, out RECT clientRect))
                 {
-                    int width = rect.Right - rect.Left;
-                    int height = rect.Bottom - rect.Top;
+                    int fullWidth = windowRect.Right - windowRect.Left;
+                    int fullHeight = windowRect.Bottom - windowRect.Top;
 
-                    if (width > 0 && height > 0)
+                    int clientWidth = clientRect.Right - clientRect.Left;
+                    int clientHeight = clientRect.Bottom - clientRect.Top - 21;
+
+                    if (fullWidth > 0 && fullHeight > 0)
                     {
-                        using (Bitmap bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb))
+                        // Full windoww
+                        using (Bitmap fullBmp = new Bitmap(fullWidth, fullHeight, PixelFormat.Format32bppArgb))
                         {
-                            using (Graphics g = Graphics.FromImage(bmp))
+                            using (Graphics g = Graphics.FromImage(fullBmp))
                             {
                                 IntPtr hdc = g.GetHdc();
-                                PrintWindow(handle, hdc, 2); // 2 = PW_RENDERFULLCONTENT
+                                PrintWindow(handle, hdc, 2); // PW_RENDERFULLCONTENT
                                 g.ReleaseHdc(hdc);
                             }
 
-                            //string fileName = $"snap_{DateTime.Now:yyyyMMdd_HHmmss}.png";
-                            //bmp.Save(Path.Combine(_screenshotPath, fileName), ImageFormat.Png);
+                            
+                            int offsetX = (fullWidth - clientWidth) / 2;
+                            int offsetY = (fullHeight - clientHeight) - offsetX;
 
-                            using (var ms = new MemoryStream())
+                            // game window
+                            using (Bitmap croppedBmp = fullBmp.Clone(new Rectangle(offsetX, offsetY, clientWidth, clientHeight), fullBmp.PixelFormat))
                             {
-                                bmp.Save(ms, ImageFormat.Png);
-                                return ms.ToArray();
+                                using (var ms = new MemoryStream())
+                                {
+                                    croppedBmp.Save(ms, ImageFormat.Png);
+                                    byte[] bytes = ms.ToArray();
+
+                                    //string fileName = $"snap_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+                                    //string filePath = Path.Combine(_screenshotPath, fileName);
+
+                                    //await File.WriteAllBytesAsync(filePath, bytes);
+
+                                    return bytes;
+                                }
                             }
                         }
                     }
-
                 }
             }
 

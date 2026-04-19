@@ -1,7 +1,4 @@
 <Solution>
-  <Folder Name="/gPRC/">
-    <File Path="trainer_api.proto.old" />
-  </Folder>
   <Project Path="AiPlays.Brain/AiPlays.Brain.csproj" Id="256a36a4-7bdc-487d-aac4-4157f35f0b5d" />
   <Project Path="AiPlays.Core/AiPlays.Core.csproj" Id="fe5a8891-0843-4147-af2b-38ba7a9a62d7" />
   <Project Path="AiPlays.Perception/AiPlays.Perception.csproj" Id="60683b38-eed3-4748-8420-3eac7c42a053" />
